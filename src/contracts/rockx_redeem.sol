@@ -30,7 +30,7 @@ contract RockXRedeem is IRockXRedeem, Initializable, PausableUpgradeable, Reentr
     function symbol() external pure returns (string memory) { return "redeemETH"; }
     function decimals() external pure returns (uint8) { return 18; }
     function totalSupply() external view returns (uint256) { return totalBalance; }
-    function balanceOf(address account) external view returns(uint256) { return balances[account]; }
+    function balanceOf(address account) external view override returns(uint256) { return balances[account]; }
 
     function claim(address to, uint256 amount) public nonReentrant returns (bool success) {
         // check
