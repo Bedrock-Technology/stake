@@ -30,6 +30,8 @@ contract RockXRestaking is Initializable, AccessControlUpgradeable, ReentrancyGu
     using Address for address payable;
     using Address for address;
 
+    address constant public stakingAddress = 0x4beFa2aA9c305238AA3E0b5D17eB20C045269E9d;
+
     bytes32 public constant OPERATOR_ROLE= keccak256("OPERATOR_ROLE");
     /// @dev the EigenLayer EigenPodManager contract
     address public eigenPodManager;
@@ -85,9 +87,29 @@ contract RockXRestaking is Initializable, AccessControlUpgradeable, ReentrancyGu
         IEigenPod(eigenPod).verifyWithdrawalCredentials(
             oracleTimestamp,
             stateRootProof,
-	    validatorIndices,
-	    withdrawalCredentialProofs, 
-	    validatorFields
+            validatorIndices,
+            withdrawalCredentialProofs, 
+            validatorFields
         );
+    }
+
+    /// @notice Called by the pod owner to withdraw the nonBeaconChainETHBalanceWei
+    function withdrawNonBeaconChainETHBalanceWei(
+        uint256 amountToWithdraw
+    ) external onlyRole(OPERATOR_ROLE) {
+        IEigenPod(eigenPod).withdrawNonBeaconChainETHBalanceWei(
+            stakingAddress, // withdraw to staking address
+            amountToWithdraw
+        );
+    }
+
+    /**
+     * @notice  Starts a delayed withdraw of the ETH from the EigenPodManager
+     * @dev     Before the eigenpod is verified, we can sweep out any accumulated ETH from the Consensus layer validator rewards
+     */
+    function startDelayedWithdrawUnstakedETH() external onlyRole(OPERATOR_ROLE) {
+        // Call the start delayed withdraw function in the EigenPodManager
+        // This will queue up a delayed withdrawal that will be sent back to this address after the timeout
+        IEigenPod(eigenPod).withdrawBeforeRestaking();
     }
 }
