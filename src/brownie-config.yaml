@@ -9,8 +9,8 @@ dependencies:
 pytest:
     # these settings replace the defaults when running pytest
     default_contract_owner: true
-    reverting_tx_gas_limit: 6721975
-    revert_traceback: true
+      #reverting_tx_gas_limit: 96721975
+      #revert_traceback: true
 
 compiler:
     solc:

@@ -13,7 +13,7 @@
 // ⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀
 // ⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀
 
-pragma solidity 0.8.4;
+pragma solidity ^0.8.4;
 
 import "interfaces/iface.sol";
 import "@eigenlayer/contracts/interfaces/IEigenPodManager.sol";
@@ -36,7 +36,7 @@ contract RockXRestaking is Initializable, AccessControlUpgradeable, ReentrancyGu
     /// @dev the EigenLayer EigenPodManager contract
     address public eigenPodManager;
     /// @dev The EigenPod owned by this contract
-    IEigenPod public eigenPod;
+    address public eigenPod;
     
     /**
      * @dev empty reserved space for future adding of variables
@@ -63,17 +63,18 @@ contract RockXRestaking is Initializable, AccessControlUpgradeable, ReentrancyGu
         __AccessControl_init();
         __ReentrancyGuard_init();
 
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _grantRole(OPERATOR_ROLE, msg.sender);
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _setupRole(OPERATOR_ROLE, msg.sender);
 
         eigenPodManager = _eigenPodManager;
+
         // Deploy new EigenPod
         IEigenPodManager(eigenPodManager).createPod();
 
         // Save off the EigenPod address
-        eigenPod = IEigenPodManager(eigenPodManager).ownerToPod(address(this));
+        eigenPod = address(IEigenPodManager(eigenPodManager).getPod(address(this)));
     }
-    
+
     /// @dev Verifies the withdrawal credentials for a withdrawal
     /// This will allow the EigenPodManager to verify the withdrawal credentials and credit the OD with shares
     /// Only the native eth restake admin should call this function
