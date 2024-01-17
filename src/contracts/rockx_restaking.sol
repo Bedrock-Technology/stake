@@ -30,6 +30,7 @@ contract RockXRestaking is Initializable, AccessControlUpgradeable, ReentrancyGu
     using Address for address payable;
     using Address for address;
 
+    bytes32 public constant OPERATOR_ROLE= keccak256("OPERATOR_ROLE");
     /// @dev the EigenLayer EigenPodManager contract
     address public eigenPodManager;
     /// @dev The EigenPod owned by this contract
@@ -61,6 +62,7 @@ contract RockXRestaking is Initializable, AccessControlUpgradeable, ReentrancyGu
         __ReentrancyGuard_init();
 
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(OPERATOR_ROLE, msg.sender);
 
         eigenPodManager = _eigenPodManager;
         // Deploy new EigenPod
@@ -79,7 +81,7 @@ contract RockXRestaking is Initializable, AccessControlUpgradeable, ReentrancyGu
         uint40[] calldata validatorIndices,
         bytes[] calldata withdrawalCredentialProofs,
         bytes32[][] calldata validatorFields
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    ) external onlyRole(OPERATOR_ROLE) {
         IEigenPod(eigenPod).verifyWithdrawalCredentials(
             oracleTimestamp,
             stateRootProof,
