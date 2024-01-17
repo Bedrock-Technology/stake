@@ -16,7 +16,9 @@
 pragma solidity 0.8.4;
 
 import "interfaces/iface.sol";
-import "eigenlayer/contracts/interfaces/IEigenPodManager.sol";
+import "@eigenlayer/contracts/interfaces/IEigenPodManager.sol";
+import "@eigenlayer/contracts/interfaces/IEigenPod.sol";
+import "@eigenlayer/contracts/libraries/BeaconChainProofs.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
@@ -66,5 +68,24 @@ contract RockXRestaking is Initializable, AccessControlUpgradeable, ReentrancyGu
 
         // Save off the EigenPod address
         eigenPod = IEigenPodManager(eigenPodManager).ownerToPod(address(this));
+    }
+    
+    /// @dev Verifies the withdrawal credentials for a withdrawal
+    /// This will allow the EigenPodManager to verify the withdrawal credentials and credit the OD with shares
+    /// Only the native eth restake admin should call this function
+    function verifyWithdrawalCredentials(
+        uint64 oracleTimestamp,
+        BeaconChainProofs.StateRootProof calldata stateRootProof,
+        uint40[] calldata validatorIndices,
+        bytes[] calldata withdrawalCredentialProofs,
+        bytes32[][] calldata validatorFields
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        IEigenPod(eigenPod).verifyWithdrawalCredentials(
+            oracleTimestamp,
+            stateRootProof,
+	    validatorIndices,
+	    withdrawalCredentialProofs, 
+	    validatorFields
+        );
     }
 }
