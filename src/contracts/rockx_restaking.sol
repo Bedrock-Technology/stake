@@ -37,6 +37,8 @@ contract RockXRestaking is Initializable, AccessControlUpgradeable, ReentrancyGu
     address public eigenPodManager;
     /// @dev The EigenPod owned by this contract
     address public eigenPod;
+    /// @dev the DelegationManager contract
+    address public delegationManager;
     
     /**
      * @dev empty reserved space for future adding of variables
@@ -56,9 +58,11 @@ contract RockXRestaking is Initializable, AccessControlUpgradeable, ReentrancyGu
      * @dev initialization 
      */
     function initialize(
-        address _eigenPodManager
+        address _eigenPodManager,
+        address _delegationManager
     ) initializer public {
         require(_eigenPodManager != address(0x0), "SYS026");
+        require(_delegationManager!= address(0x0), "SYS027");
 
         __AccessControl_init();
         __ReentrancyGuard_init();
@@ -66,7 +70,9 @@ contract RockXRestaking is Initializable, AccessControlUpgradeable, ReentrancyGu
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setupRole(OPERATOR_ROLE, msg.sender);
 
+        // Assign to local variable
         eigenPodManager = _eigenPodManager;
+        delegationManager = _delegationManager;
 
         // Deploy new EigenPod
         IEigenPodManager(eigenPodManager).createPod();
