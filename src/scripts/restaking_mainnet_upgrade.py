@@ -32,12 +32,12 @@ def main():
 
     #init 
     transparent_restaking = Contract.from_abi("RockXRestaking",restaking_proxy, RockXRestaking.abi)
-    transparent_restaking.initialize('0x91E677b07F7AF907ec9a428aafA9fc14a0d3A338', {'from': owner})
+    transparent_restaking.initialize(eigenpod_manager, {'from': owner})
     
     # set eigenpod to staking contract
     transparent_staking = Contract.from_abi("RockXStaking",staking_proxy, RockXStaking.abi)
     transparent_staking.setRestakingAddress(transparent_restaking.eigenPod(), {'from':gnosis_safe})
     print("restaking address", transparent_staking.addrRestaking(),transparent_staking.restakingWithdrawalCredentials()) 
 
-    # register
+    # simulate
 

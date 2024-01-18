@@ -70,4 +70,3 @@ def setup_contracts(owner, deployer):
     transparent_staking.switchPhase(1,{'from':owner})
     
     return transparent_xeth, transparent_staking, transparent_redeem
-
