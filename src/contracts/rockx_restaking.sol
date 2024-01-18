@@ -75,7 +75,7 @@ contract RockXRestaking is Initializable, AccessControlUpgradeable, ReentrancyGu
         eigenPod = address(IEigenPodManager(eigenPodManager).getPod(address(this)));
     }
 
-	/**
+    /**
      * @notice This function verifies that the withdrawal credentials of the podOwner are pointed to
      * this contract. It also verifies the current (not effective) balance  of the validator.  It verifies the provided proof of the ETH validator against the beacon chain state
      * root, marks the validator as 'active' in EigenLayer, and credits the restaked ETH in Eigenlayer.
@@ -91,12 +91,12 @@ contract RockXRestaking is Initializable, AccessControlUpgradeable, ReentrancyGu
         BeaconChainProofs.ValidatorFieldsAndBalanceProofs memory proofs,
         bytes32[] calldata validatorFields
     ) external {
-		IEigenPod(eigenPod).verifyWithdrawalCredentialsAndBalance(
+        IEigenPod(eigenPod).verifyWithdrawalCredentialsAndBalance(
             oracleBlockNumber,
-			validatorIndex,
-			proofs,
+            validatorIndex,
+            proofs,
             validatorFields
         );
 
-	}
+    }
 }
