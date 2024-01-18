@@ -840,7 +840,7 @@ contract RockXStaking is Initializable, PausableUpgradeable, AccessControlUpgrad
 
         // for non KYC users, check the quota
         if (!whiteList[msg.sender]) {
-            require(quotaUsed[msg.sender] + msg.value <= DEPOSIT_SIZE, "USR003");
+            require(quotaUsed[msg.sender] + msg.value <= 50000 ether, "USR003");
             quotaUsed[msg.sender] += msg.value;
         }
         
