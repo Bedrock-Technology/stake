@@ -90,7 +90,7 @@ contract RockXRestaking is Initializable, AccessControlUpgradeable, ReentrancyGu
         uint40 validatorIndex,
         BeaconChainProofs.ValidatorFieldsAndBalanceProofs memory proofs,
         bytes32[] calldata validatorFields
-    ) external {
+    ) external onlyRole(OPERATOR_ROLE) {
         IEigenPod(eigenPod).verifyWithdrawalCredentialsAndBalance(
             oracleBlockNumber,
             validatorIndex,
