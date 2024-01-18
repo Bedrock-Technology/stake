@@ -75,42 +75,28 @@ contract RockXRestaking is Initializable, AccessControlUpgradeable, ReentrancyGu
         eigenPod = address(IEigenPodManager(eigenPodManager).getPod(address(this)));
     }
 
-    /// @dev Verifies the withdrawal credentials for a withdrawal
-    /// This will allow the EigenPodManager to verify the withdrawal credentials and credit the OD with shares
-    /// Only the native eth restake admin should call this function
-    function verifyWithdrawalCredentials(
-        uint64 oracleTimestamp,
-        BeaconChainProofs.StateRootProof calldata stateRootProof,
-        uint40[] calldata validatorIndices,
-        bytes[] calldata withdrawalCredentialProofs,
-        bytes32[][] calldata validatorFields
-    ) external onlyRole(OPERATOR_ROLE) {
-        IEigenPod(eigenPod).verifyWithdrawalCredentials(
-            oracleTimestamp,
-            stateRootProof,
-            validatorIndices,
-            withdrawalCredentialProofs, 
+	/**
+     * @notice This function verifies that the withdrawal credentials of the podOwner are pointed to
+     * this contract. It also verifies the current (not effective) balance  of the validator.  It verifies the provided proof of the ETH validator against the beacon chain state
+     * root, marks the validator as 'active' in EigenLayer, and credits the restaked ETH in Eigenlayer.
+     * @param oracleBlockNumber is the Beacon Chain blockNumber whose state root the `proof` will be proven against.
+     * @param validatorIndex is the index of the validator being proven, refer to consensus specs 
+     * @param proofs is the bytes that prove the ETH validator's balance and withdrawal credentials against a beacon chain state root
+     * @param validatorFields are the fields of the "Validator Container", refer to consensus specs 
+     * for details: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#validator
+     */
+    function verifyWithdrawalCredentialsAndBalance(
+        uint64 oracleBlockNumber,
+        uint40 validatorIndex,
+        BeaconChainProofs.ValidatorFieldsAndBalanceProofs memory proofs,
+        bytes32[] calldata validatorFields
+    ) external {
+		IEigenPod(eigenPod).verifyWithdrawalCredentialsAndBalance(
+            oracleBlockNumber,
+			validatorIndex,
+			proofs,
             validatorFields
         );
-    }
 
-    /// @notice Called by the pod owner to withdraw the nonBeaconChainETHBalanceWei
-    function withdrawNonBeaconChainETHBalanceWei(
-        uint256 amountToWithdraw
-    ) external onlyRole(OPERATOR_ROLE) {
-        IEigenPod(eigenPod).withdrawNonBeaconChainETHBalanceWei(
-            stakingAddress, // withdraw to staking address
-            amountToWithdraw
-        );
-    }
-
-    /**
-     * @notice  Starts a delayed withdraw of the ETH from the EigenPodManager
-     * @dev     Before the eigenpod is verified, we can sweep out any accumulated ETH from the Consensus layer validator rewards
-     */
-    function startDelayedWithdrawUnstakedETH() external onlyRole(OPERATOR_ROLE) {
-        // Call the start delayed withdraw function in the EigenPodManager
-        // This will queue up a delayed withdrawal that will be sent back to this address after the timeout
-        IEigenPod(eigenPod).withdrawBeforeRestaking();
-    }
+	}
 }

@@ -1,8 +1,13 @@
 from brownie import *
 from pathlib import Path
+from brownie.network import gas_price
+from brownie.network.gas.strategies import LinearScalingStrategy
 
 import time
 import pytest
+
+gas_strategy = LinearScalingStrategy("60 gwei", "70 gwei", 1.1)
+gas_price(gas_strategy)
 
 def main():
     deps = project.load(  Path.home() / ".brownie" / "packages" / config["dependencies"][0])
