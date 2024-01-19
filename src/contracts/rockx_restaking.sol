@@ -148,4 +148,11 @@ contract RockXRestaking is Initializable, AccessControlUpgradeable, ReentrancyGu
     ) external onlyRole(OPERATOR_ROLE) {
         IDelayedWithdrawalRouter(delayedWithdrawalRouter).claimDelayedWithdrawals(maxNumberOfWithdrawalsToClaim);
     }
+
+    /**
+     * @notice Withdraw ether assets of this contract to Staking Contract
+     */
+    function withdrawEthers() external nonReentrant onlyRole(OPERATOR_ROLE) {
+        payable(stakingAddress).sendValue(address(this).balance);
+    }
 }
