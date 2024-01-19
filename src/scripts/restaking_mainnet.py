@@ -61,8 +61,10 @@ def main():
     eigenpod_manager = '0x91E677b07F7AF907ec9a428aafA9fc14a0d3A338'
     delegation_manager = '0x39053D51B77DC0d36036Fc1fCc8Cb819df8Ef37A'
     strategy_manager = '0x858646372CC42E1A627fcE94aa7A7033e7CF075A'
+    delayed_withdrawal_router = '0x7Fe7E9CC0F274d2435AD5d56D5fa73E47F6A23D8'
+
     transparent_restaking = Contract.from_abi("RockXRestaking",restaking_proxy, RockXRestaking.abi)
-    transparent_restaking.initialize(eigenpod_manager, delegation_manager, strategy_manager, {'from': owner})
+    transparent_restaking.initialize(eigenpod_manager, delegation_manager, strategy_manager, delayed_withdrawal_router, {'from': owner})
 
     # set eigenpod to staking contract
     transparent_staking.setRestakingAddress(transparent_restaking.eigenPod(), {'from':owner})

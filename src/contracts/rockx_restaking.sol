@@ -17,6 +17,7 @@ pragma solidity ^0.8.4;
 
 import "interfaces/iface.sol";
 import "@eigenlayer/contracts/interfaces/IEigenPodManager.sol";
+import "@eigenlayer/contracts/interfaces/IDelayedWithdrawalRouter.sol";
 import "@eigenlayer/contracts/interfaces/IEigenPod.sol";
 import "@eigenlayer/contracts/libraries/BeaconChainProofs.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -49,7 +50,9 @@ contract RockXRestaking is Initializable, AccessControlUpgradeable, ReentrancyGu
     address public delegationManager;
     /// @dev the StrategyManager contract
     address public strategyManager;
-    
+    /// @dev the DelayedWithdrawalRouter contract
+    address public delayedWithdrawalRouter;
+
     /**
      * @dev empty reserved space for future adding of variables
      */
@@ -70,7 +73,8 @@ contract RockXRestaking is Initializable, AccessControlUpgradeable, ReentrancyGu
     function initialize(
         address _eigenPodManager,
         address _delegationManager,
-        address _strategyManager
+        address _strategyManager,
+        address _delayedWithdrawalRouter
     ) initializer public {
         require(_eigenPodManager != address(0x0), "SYS026");
         require(_delegationManager!= address(0x0), "SYS027");
@@ -86,6 +90,7 @@ contract RockXRestaking is Initializable, AccessControlUpgradeable, ReentrancyGu
         eigenPodManager = _eigenPodManager;
         delegationManager = _delegationManager;
         strategyManager = _strategyManager;
+        delayedWithdrawalRouter = _delayedWithdrawalRouter;
 
         // Deploy new EigenPod
         IEigenPodManager(eigenPodManager).createPod();
@@ -118,13 +123,28 @@ contract RockXRestaking is Initializable, AccessControlUpgradeable, ReentrancyGu
         );
     }
 
-    /**
-     * @notice  Starts a delayed withdraw of the ETH from the EigenPodManager
-     * @dev     Before the eigenpod is verified, we can sweep out any accumulated ETH from the Consensus layer validator rewards
-     */
-    function startDelayedWithdrawUnstakedETH() external onlyRole(OPERATOR_ROLE) {
-        // Call the start delayed withdraw function in the EigenPodManager
-        // This will queue up a delayed withdrawal that will be sent back to this address after the timeout
+    /// @notice Called by the pod owner to withdraw the balance of the pod when `hasRestaked` is set to false
+    function withdrawBeforeRestaking(
+    ) external onlyRole(OPERATOR_ROLE) {
         IEigenPod(eigenPod).withdrawBeforeRestaking();
+    }
+
+    /** 
+     * @notice Creates an delayed withdrawal for `msg.value` to the `recipient`.
+     */
+    function createDelayedWithdrawal(
+        address podOwner
+    ) external payable onlyRole(OPERATOR_ROLE) {
+        IDelayedWithdrawalRouter(delayedWithdrawalRouter).createDelayedWithdrawal(podOwner, stakingAddress);
+    }
+
+    /**
+     * @notice Called in order to withdraw delayed withdrawals made to the caller that have passed the `withdrawalDelayBlocks` period.
+     * @param maxNumberOfWithdrawalsToClaim Used to limit the maximum number of withdrawals to loop through claiming.
+     */
+    function claimDelayedWithdrawals(
+        uint256 maxNumberOfWithdrawalsToClaim
+    ) external onlyRole(OPERATOR_ROLE) {
+        IDelayedWithdrawalRouter(delayedWithdrawalRouter).claimDelayedWithdrawals(maxNumberOfWithdrawalsToClaim);
     }
 }
