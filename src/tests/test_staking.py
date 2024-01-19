@@ -50,6 +50,9 @@ def test_replaceValidator(setup_contracts, owner, pubkeys, sigs):
 
     # replace
     transparent_staking.replaceValidator(pubkeys[0], pubkeys[1], sigs[1], {'from': owner})
+    results = transparent_staking.getRegisteredValidators(0, 1)
+    assert(results["pubkeys"][0] == hex(pubkeys[1]))
+    assert(results["signatures"][0] == hex(sigs[1]))
     ''' replacing again should revert '''
     with brownie.reverts("SYS006"):
         transparent_staking.replaceValidator(pubkeys[0], pubkeys[1], sigs[1], {'from': owner})

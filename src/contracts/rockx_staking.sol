@@ -355,7 +355,10 @@ contract RockXStaking is Initializable, PausableUpgradeable, AccessControlUpgrad
 
             // set new pubkey
             bytes32 pubkeyHash = keccak256(pubkey);
-            validatorRegistry[index] = ValidatorCredential({pubkey:pubkey, signature:signature, stopped:false, restaking: restaking});
+            ValidatorCredential storage validator = validatorRegistry[index];
+            validator.pubkey = pubkey;
+            validator.signature = signature;
+            validator.restaking = restaking;
             pubkeyIndices[pubkeyHash] = index+1;
         }
     }
