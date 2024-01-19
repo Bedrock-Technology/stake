@@ -38,8 +38,9 @@ def test_restaking(setup_contracts, owner, deployer):
     print("restaking address", transparent_staking.addrRestaking(),transparent_staking.restakingWithdrawalCredentials()) 
 
     # mint
-    assert transparent_staking.getNextValidatorId() == 0
     transparent_staking.toggleWhiteList(owner, {'from':owner})
     assert transparent_staking.isWhiteListed(owner) == True
     transparent_staking.mint(0, time.time() + 600, {'from':owner, 'value': '64 ether'})
+    assert transparent_staking.getNextValidatorId() == 0
+    transparent_staking.stake({'from':owner})
     assert transparent_staking.getNextValidatorId() == 1

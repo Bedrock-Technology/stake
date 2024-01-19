@@ -448,8 +448,11 @@ contract RockXStaking is Initializable, PausableUpgradeable, AccessControlUpgrad
     function stake() external onlyRole(REGISTRY_ROLE) {
         // spin up n nodes
         uint256 numValidators = totalPending / DEPOSIT_SIZE;
-        require(nextValidatorId + numValidators <= validatorRegistry.length, "SYS009");
-        for (uint256 i = 0;i<numValidators;i++) {
+        uint256 maxValidators = (nextValidatorId + numValidators <= validatorRegistry.length)?
+                                    numValidators:
+                                    validatorRegistry.length - nextValidatorId;
+
+        for (uint256 i = 0;i<maxValidators;i++) {
             _spinup();
         }
 

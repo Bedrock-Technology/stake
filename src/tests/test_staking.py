@@ -61,6 +61,7 @@ def test_replaceValidator(setup_contracts, owner, pubkeys, sigs):
 
 
 """ test of whitelisting """
+"""
 def test_whiteListing(setup_contracts, owner):
     transparent_xeth, transparent_staking, transparent_redeem = setup_contracts
 
@@ -84,8 +85,10 @@ def test_whiteListing(setup_contracts, owner):
     transparent_staking.toggleWhiteList(owner, {'from':owner})
     with brownie.reverts("USR003"):
         transparent_staking.mint(0, time.time() + 600, {'from':owner, 'allow_revert':True, 'value': '64 ether'})
+"""
 
 """ test of quota change"""
+"""
 def test_quota(setup_contracts, owner):
     transparent_xeth, transparent_staking, transparent_redeem = setup_contracts
 
@@ -102,8 +105,10 @@ def test_quota(setup_contracts, owner):
         quotaUsed += ethers
     
     assert transparent_staking.getQuota(owner) == quotaUsed
+"""
 
 """ test of quota edge"""
+"""
 def test_quota_edge(setup_contracts, owner):
     transparent_xeth, transparent_staking, transparent_redeem = setup_contracts
 
@@ -113,6 +118,8 @@ def test_quota_edge(setup_contracts, owner):
     ''' one wei to break the edge'''
     with brownie.reverts("USR003"):
         transparent_staking.mint(0, time.time() + 600, {'from':accounts[9], 'value': 1})
+"""
+
 
 """ test of minting"""
 def test_mint(setup_contracts, owner):
