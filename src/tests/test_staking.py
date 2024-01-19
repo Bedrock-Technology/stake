@@ -59,6 +59,33 @@ def test_replaceValidator(setup_contracts, owner, pubkeys, sigs):
     assert(results["pubkeys"][0] == hex(pubkeys[1]))
     assert(results["signatures"][0] == hex(sigs[1]))
 
+""" test of replacing validators """
+def test_replaceValidators(setup_contracts, owner, oldpubkeys, oldsigs, replacepubkeys, replacesigs, restake):
+    transparent_xeth, transparent_staking, transparent_redeem = setup_contracts
+
+    transparent_staking.registerValidators(oldpubkeys, oldsigs, {'from': owner})
+    ''' register again should revert '''
+    with brownie.reverts("SYS005"):
+        transparent_staking.registerValidators(oldpubkeys, oldsigs, {'from': owner})
+
+    assert transparent_staking.getRegisteredValidatorsCount() == len(oldpubkeys)
+    results = transparent_staking.getRegisteredValidators(0, len(oldpubkeys))
+    for i in range(len(oldpubkeys)):
+        assert(results["pubkeys"][i] == hex(oldpubkeys[i]))
+        assert(results["signatures"][i] == hex(oldsigs[i]))
+
+    # replace
+    transparent_staking.replaceValidators(oldpubkeys, replacepubkeys, replacesigs, restake, {'from': owner})
+    ''' replacing again should revert '''
+    with brownie.reverts("SYS006"):
+        transparent_staking.replaceValidators(oldpubkeys, replacepubkeys, replacesigs, restake, {'from': owner})
+
+    assert transparent_staking.getRegisteredValidatorsCount() == len(oldpubkeys)
+    results = transparent_staking.getRegisteredValidators(0, len(oldpubkeys))
+    for i in range(len(oldpubkeys)):
+        assert(results["pubkeys"][i] == hex(replacepubkeys[i]))
+        assert(results["signatures"][i] == hex(replacesigs[i]))
+
 
 """ test of whitelisting """
 """
