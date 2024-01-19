@@ -79,6 +79,7 @@ contract RockXRestaking is Initializable, AccessControlUpgradeable, ReentrancyGu
         require(_eigenPodManager != address(0x0), "SYS026");
         require(_delegationManager!= address(0x0), "SYS027");
         require(_strategyManager!= address(0x0), "SYS028");
+        require(_delayedWithdrawalRouter!= address(0x0), "SYS029");
 
         __AccessControl_init();
         __ReentrancyGuard_init();
