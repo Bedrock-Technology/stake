@@ -813,6 +813,32 @@ contract RockXStaking is Initializable, PausableUpgradeable, AccessControlUpgrad
     }
 
     /**
+     * @dev return a batch of validators information
+     * UPDATE(20240119): V2 returns restaking info
+     */
+    function getRegisteredValidatorsV2(uint256 idx_from, uint256 idx_to) external view returns (
+         bytes [] memory pubkeys,
+         bytes [] memory signatures,
+         bool [] memory stopped,
+         bool [] memory restaking)
+    {
+        pubkeys = new bytes[](idx_to - idx_from);
+        signatures = new bytes[](idx_to - idx_from);
+        stopped = new bool[](idx_to - idx_from);
+        restaking = new bool[](idx_to - idx_from);
+
+        uint counter = 0;
+        for (uint i = idx_from; i < idx_to;i++) {
+            pubkeys[counter] = validatorRegistry[i].pubkey;
+            signatures[counter] = validatorRegistry[i].signature;
+            stopped[counter] = validatorRegistry[i].stopped;
+            restaking[counter] = validatorRegistry[i].restaking;
+            counter++;
+        }
+    }
+
+
+    /**
      * @dev return next validator id
      */
     function getNextValidatorId() external view returns (uint256) { return nextValidatorId; }
