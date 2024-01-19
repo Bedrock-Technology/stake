@@ -331,6 +331,36 @@ contract RockXStaking is Initializable, PausableUpgradeable, AccessControlUpgrad
     }
 
     /**
+     * @dev replace validators in batch
+     */
+    function replaceValidators(bytes [] calldata oldpubkeys, bytes [] calldata pubkeys, bytes [] calldata signatures, bool restaking) external onlyRole(REGISTRY_ROLE) {
+        require(pubkeys.length == signatures.length, "SYS007");
+        require(oldpubkeys.length == pubkeys.length, "SYS007");
+        uint256 n = pubkeys.length;
+
+        for(uint256 i=0;i<n;i++) {
+            bytes calldata oldpubkey = oldpubkeys[i];
+            bytes calldata pubkey = pubkeys[i];
+            bytes calldata signature = signatures[i];
+
+            require(oldpubkey.length == PUBKEY_LENGTH, "SYS004");
+            require(pubkey.length == PUBKEY_LENGTH, "SYS004");
+            require(signature.length == SIGNATURE_LENGTH, "SYS003");
+
+            // mark old pub key to false
+            bytes32 oldPubKeyHash = keccak256(oldpubkey);
+            require(pubkeyIndices[oldPubKeyHash] > 0, "SYS006");
+            uint256 index = pubkeyIndices[oldPubKeyHash] - 1;
+            delete pubkeyIndices[oldPubKeyHash];
+
+            // set new pubkey
+            bytes32 pubkeyHash = keccak256(pubkey);
+            validatorRegistry[index] = ValidatorCredential({pubkey:pubkey, signature:signature, stopped:false, restaking: restaking});
+            pubkeyIndices[pubkeyHash] = index+1;
+        }
+    }
+
+    /**
      * @dev register a batch of validators
      */
     function registerValidators(bytes [] calldata pubkeys, bytes [] calldata signatures) external onlyRole(REGISTRY_ROLE) {

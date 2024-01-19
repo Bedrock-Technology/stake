@@ -47,6 +47,8 @@ contract RockXRestaking is Initializable, AccessControlUpgradeable, ReentrancyGu
     address public eigenPod;
     /// @dev the DelegationManager contract
     address public delegationManager;
+    /// @dev the StrategyManager contract
+    address public strategyManager;
     
     /**
      * @dev empty reserved space for future adding of variables
@@ -67,10 +69,12 @@ contract RockXRestaking is Initializable, AccessControlUpgradeable, ReentrancyGu
      */
     function initialize(
         address _eigenPodManager,
-        address _delegationManager
+        address _delegationManager,
+        address _strategyManager
     ) initializer public {
         require(_eigenPodManager != address(0x0), "SYS026");
         require(_delegationManager!= address(0x0), "SYS027");
+        require(_strategyManager!= address(0x0), "SYS028");
 
         __AccessControl_init();
         __ReentrancyGuard_init();
@@ -81,6 +85,7 @@ contract RockXRestaking is Initializable, AccessControlUpgradeable, ReentrancyGu
         // Assign to local variable
         eigenPodManager = _eigenPodManager;
         delegationManager = _delegationManager;
+        strategyManager = _strategyManager;
 
         // Deploy new EigenPod
         IEigenPodManager(eigenPodManager).createPod();
@@ -111,6 +116,15 @@ contract RockXRestaking is Initializable, AccessControlUpgradeable, ReentrancyGu
             proofs,
             validatorFields
         );
+    }
 
+    /**
+     * @notice  Starts a delayed withdraw of the ETH from the EigenPodManager
+     * @dev     Before the eigenpod is verified, we can sweep out any accumulated ETH from the Consensus layer validator rewards
+     */
+    function startDelayedWithdrawUnstakedETH() external onlyRole(OPERATOR_ROLE) {
+        // Call the start delayed withdraw function in the EigenPodManager
+        // This will queue up a delayed withdrawal that will be sent back to this address after the timeout
+        IEigenPod(eigenPod).withdrawBeforeRestaking();
     }
 }

@@ -30,8 +30,9 @@ def test_restaking(setup_contracts, owner, deployer):
     #init 
     eigenpod_manager = '0x91E677b07F7AF907ec9a428aafA9fc14a0d3A338'
     delegation_manager = '0x39053D51B77DC0d36036Fc1fCc8Cb819df8Ef37A'
+    strategy_manager = '0x858646372CC42E1A627fcE94aa7A7033e7CF075A'
     transparent_restaking = Contract.from_abi("RockXRestaking",restaking_proxy, RockXRestaking.abi)
-    transparent_restaking.initialize(eigenpod_manager, delegation_manager, {'from': owner})
+    transparent_restaking.initialize(eigenpod_manager, delegation_manager, strategy_manager, {'from': owner})
 
     # set eigenpod to staking contract
     transparent_staking.setRestakingAddress(transparent_restaking.eigenPod(), {'from':owner})
