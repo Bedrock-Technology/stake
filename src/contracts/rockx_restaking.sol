@@ -25,6 +25,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+
 /**
  * @title RockX EigenLayer Restaking Contract
  *
@@ -33,7 +34,6 @@ import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.
  *      1. createPod for native staking
  *      2. withdraws rewards from eigenpod to staking contract.
  */
-
 contract RockXRestaking is Initializable, AccessControlUpgradeable, ReentrancyGuardUpgradeable {
     using SafeERC20 for IERC20;
     using Address for address payable;
@@ -58,13 +58,6 @@ contract RockXRestaking is Initializable, AccessControlUpgradeable, ReentrancyGu
      */
     uint256[32] private __gap;
 
-    /**
-     * ======================================================================================
-     *
-     * SYSTEM SETTINGS
-     *
-     * ======================================================================================
-     */
     receive() external payable { }
 
     /**
