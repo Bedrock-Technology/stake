@@ -20,6 +20,7 @@ import "@eigenlayer/contracts/interfaces/IEigenPodManager.sol";
 import "@eigenlayer/contracts/interfaces/IDelayedWithdrawalRouter.sol";
 import "@eigenlayer/contracts/interfaces/IEigenPod.sol";
 import "@eigenlayer/contracts/libraries/BeaconChainProofs.sol";
+
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
@@ -35,10 +36,7 @@ import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.
  *      2. withdraws rewards from eigenpod to staking contract.
  */
 contract RockXRestaking is Initializable, AccessControlUpgradeable, ReentrancyGuardUpgradeable {
-    using SafeERC20 for IERC20;
     using Address for address payable;
-    using Address for address;
-
     address constant public stakingAddress = 0x4beFa2aA9c305238AA3E0b5D17eB20C045269E9d;
 
     bytes32 public constant OPERATOR_ROLE= keccak256("OPERATOR_ROLE");
@@ -59,6 +57,7 @@ contract RockXRestaking is Initializable, AccessControlUpgradeable, ReentrancyGu
     uint256[32] private __gap;
 
     receive() external payable { }
+    constructor() initializer {}
 
     /**
      * @dev initialization 
