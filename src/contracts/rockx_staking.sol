@@ -229,7 +229,7 @@ contract RockXStaking is Initializable, PausableUpgradeable, AccessControlUpgrad
 
     // UPDATE(20240115): eigenlayer's restaking withdrawal credential
     bytes32 public restakingWithdrawalCredentials;  // restaking withdrawal credential, formatted in bytes32
-    address public addrRestaking;                   // usually a restaking withdrawal credential adress(like eigenpod)
+    address public restakingAddress;                // usually a restaking withdrawal credential adress(like eigenpod)
                                                     // addr(0x0) suggests that we're not using restaking address
 
     /** 
@@ -466,7 +466,7 @@ contract RockXStaking is Initializable, PausableUpgradeable, AccessControlUpgrad
      */
     function setRestakingAddress(address addr) external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(addr != address(0x0), "SYS025");
-        addrRestaking = addr;
+        restakingAddress = addr;
 
         // set restaking withdrawal credentials
         bytes memory cred = abi.encodePacked(bytes1(0x01), new bytes(11), addr);
@@ -535,8 +535,8 @@ contract RockXStaking is Initializable, PausableUpgradeable, AccessControlUpgrad
         // UPDATE(20240115): account in restaking partial withdrawal balance
         //  (eg: eigenpod address.)
         uint256 restakingBalance;
-        if (addrRestaking != address(0x0)) {
-            restakingBalance = address(addrRestaking).balance;
+        if (restakingAddress!= address(0x0)) {
+            restakingBalance = address(restakingAddress).balance;
         }
         uint256 combinedBalance = address(this).balance + restakingBalance;
 	

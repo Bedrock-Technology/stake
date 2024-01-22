@@ -68,7 +68,7 @@ def main():
 
     # set eigenpod to staking contract
     transparent_staking.setRestakingAddress(transparent_restaking.eigenPod(), {'from':owner})
-    print("restaking address", transparent_staking.addrRestaking(), transparent_staking.restakingWithdrawalCredentials()) 
+    print("restaking address", transparent_staking.restakingAddress(), transparent_staking.restakingWithdrawalCredentials()) 
 
     # mint
     assert transparent_staking.getNextValidatorId() == 0
